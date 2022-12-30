@@ -1,0 +1,47 @@
+name: Trivy Scan
+on:
+  schedule:
+    - cron: '0 10 * * MON'
+  workflow_dispatch:
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Build an image from Dockerfile
+        run: |
+          docker build \
+          -t docker.io/amazon/aws-efs-csi-driver:${{ github.sha }} \
+          --build-arg TARGETOS=linux \
+          --build-arg TARGETARCH=amd64 .
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'docker.io/amazon/aws-efs-csi-driver:${{ github.sha }}'
+#          format: 'table'
+#          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH,MEDIUM,LOW'
+#          format: 'template'
+          template: '@.github/template/slack.tpl'
+          output: 'trivy-results.txt'
+      - name: Read Trivy scan report to env variable
+        run: echo "TRIVY_REPORT_TXT=$(cat trivy-results.txt)" >> $GITHUB_ENV
+      - name: Send GitHub Action trigger data to Slack workflow
+        id: slack
+        uses: slackapi/slack-github-action@v1.23.0
+        with:
+          payload: |
+            {
+              "trivy_report_table":"${{ env.TRIVY_REPORT_TXT }}"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+#      - name: Upload Trivy scan results to GitHub Security tab
+#        uses: github/codeql-action/upload-sarif@v2
+#        with:
+#          sarif_file: 'trivy-results.sarif'
