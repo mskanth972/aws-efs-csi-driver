@@ -37,6 +37,8 @@ spec:
             - --v=2
             - --delete-access-point-root-dir=false
             - --vol-metrics-opt-in=false
+            - --vol-metrics-refresh-period=240
+            - --vol-metrics-fs-rate-limit=5
           env:
             - name: CSI_ENDPOINT
               value: unix:///var/lib/csi/sockets/pluginproxy/csi.sock
