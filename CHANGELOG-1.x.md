@@ -14,7 +14,7 @@
 # V1.6.0
 * Bump golang.org/x/net/html to fix CVE-2023-3978. ([#1089](https://github.com/kubernetes-sigs/aws-efs-csi-driver/pull/1089), [@jsafrane](https://github.com/jsafrane))
 * Set efs-plugin container security context to `true` which can solve the deleteAccessPointRootDir issues. ([#1096](https://github.com/kubernetes-sigs/aws-efs-csi-driver/pull/1096),
-[@seanzatzdev-amazon](https://github.com/seanzatzdev-amazon))
+  [@seanzatzdev-amazon](https://github.com/seanzatzdev-amazon))
 * Updated all the necessary components to enable running kOps / EKS e2e CI jobs in the latest version of K8s without `hostNetwork: true`. ([#1088](https://github.com/kubernetes-sigs/aws-efs-csi-driver/pull/1088), [@torredil](https://github.com/torredil))
 # V1.5.9
 * Addressed CVEs (CVE-2023-2602, CVE-2019-15167, CVE-2-23-2431, CVE-2023-2727).
@@ -60,9 +60,10 @@
 * Fixed-AWS EFS CSI Driver crashes if Access Point creation fails and static GID set
 * Update efs-csi-driver to use efs-utils latest release v1.34.5 which Handle invalid mount point name, Avoid redundant get_target_region call, Update man page and Watchdog detect empty private key and regenerate
 # V1.4.8
-* Update efs-csi-driver to use efs-utils latest release v1.34.4 and include stunnel fix ([#125](https://github.com/aws/efs-utils/issues/125))
+* Use efs-utils version v1.34.4 for stunnel fix ([#125](https://github.com/aws/efs-utils/issues/125)
 # V1.4.7
-* Update the efs-utils to v1.34.3 to reduce possibility of multiple mounts starting from same port range
+* Update the efs-utils to v1.34.3 to reduce possibility of multiple mounts starting from same port range.
+* Added following permissions to the policy json at https://raw.githubusercontent.com/kubernetes-sigs/aws-efs-csi-driver/master/examples/kubernetes/cross_account_mount/iam-policy-examples/describe-mount-target-example.json
 # V1.4.6
 * Update efs-utils to stunnel5.
 # V1.4.5

@@ -13,9 +13,9 @@
 * Bump helm version for change of state-dir path to avoid losing track of state files which exists already to `v2.4.5`
 # v2.4.4
 * Bump helm version to pick the latest side-car images `v2.4.4`
-# v2.4.3
+# V2.4.3
 * Bump app/driver version to `v1.5.6`
-# v2.4.2
+# V2.4.2
 * Bump app/driver version to `v1.5.5` 
 # v2.4.1
 * Bump app/driver version to `v1.5.4`
