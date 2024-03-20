@@ -13,7 +13,7 @@
 # limitations under the License.
 #
 
-VERSION=v1.7.6
+VERSION=v1.7.2
 
 PKG=github.com/kubernetes-sigs/aws-efs-csi-driver
 GIT_COMMIT?=$(shell git rev-parse HEAD)
@@ -33,6 +33,9 @@ GOOS=$(shell go env GOOS)
 REGISTRY?=amazon
 IMAGE?=$(REGISTRY)/aws-efs-csi-driver
 TAG?=$(GIT_COMMIT)
+
+# MMH with proxy! We'll copy this into the image and use it.
+MMH?=/home/rjstank/workspaces/MagnolioMountHelper/build/MagnolioMountHelper/MagnolioMountHelper-1.0/AL2_x86_64/DEV.STD.PTHREAD/build/amazon-efs-utils-1.35.0-1.x86_64.rpm
 
 OUTPUT_TYPE?=docker
 
@@ -83,12 +86,14 @@ sub-image-%:
 .PHONY: image
 image: .image-$(TAG)-$(OS)-$(ARCH)-$(OSVERSION)
 .image-$(TAG)-$(OS)-$(ARCH)-$(OSVERSION):
+	cp $(MMH) ./amazon-efs-utils-1.35.0-1.x86_64.rpm
 	docker buildx build \
 		--no-cache-filter=linux-amazon \
 		--platform=$(OS)/$(ARCH) \
 		--progress=plain \
 		--target=$(OS)-$(OSVERSION) \
 		--output=type=$(OUTPUT_TYPE) \
+		--build-arg MMH=$(MMH) \
 		-t=$(IMAGE):$(TAG)-$(OS)-$(ARCH)-$(OSVERSION) \
 		.
 	touch $@

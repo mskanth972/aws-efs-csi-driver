@@ -30,23 +30,12 @@ RUN OS=${TARGETOS} ARCH=${TARGETARCH} make $TARGETOS/$TARGETARCH
 
 FROM public.ecr.aws/eks-distro-build-tooling/python:3.9-gcc-al2 as rpm-provider
 
-# Install efs-utils from github by default. It can be overriden to `yum` with --build-arg when building the Docker image.
-# If value of `EFSUTILSSOURCE` build arg is overriden with `yum`, docker will install efs-utils from Amazon Linux 2's yum repo.
-ARG EFSUTILSSOURCE=github
-RUN mkdir -p /tmp/rpms && \
-    if [ "$EFSUTILSSOURCE" = "yum" ]; \
-    then echo "Installing efs-utils from Amazon Linux 2 yum repo" && \
-         yum -y install --downloadonly --downloaddir=/tmp/rpms amazon-efs-utils-1.35.0-1.amzn2.noarch; \
-    else echo "Installing efs-utils from github using the latest git tag" && \
-         yum -y install git rpm-build make && \
-         git clone https://github.com/aws/efs-utils && \
-         cd efs-utils && \
-         git checkout $(git describe --tags $(git rev-list --tags --max-count=1)) && \
-         make rpm && mv build/amazon-efs-utils*rpm /tmp/rpms && \
-         # clean up efs-utils folder after install
-         cd .. && rm -rf efs-utils && \
-         yum clean all; \
-    fi
+# Install efs-utils from the local file path so that we can test efs-utils with efs-proxy.
+# Make sure to set the MMH argument when building the docker image.
+# The RPM must still be named amazon-efs-utils to get picked up by the RPM installer scripts.
+RUN mkdir -p /tmp/rpms
+ARG MMH
+COPY ${MMH} /tmp/rpms
 
 # Install botocore required by efs-utils for cross account mount
 RUN pip3 install --user botocore
